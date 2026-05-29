@@ -3,8 +3,6 @@ require_once realpath(__DIR__ . "/vendor/autoload.php");
 use Dotenv\Dotenv;
 $dotenv = Dotenv::createImmutable(__DIR__);
 $dotenv->load();
-$token = $_ENV['TMDB_READ_ACCESS_TOKEN'];
-$header = "Authorization: Bearer $token";
 ?>
 
 <!DOCTYPE html>
@@ -16,8 +14,15 @@ $header = "Authorization: Bearer $token";
 </head>
 <body>
     <h1>Random Movie Finder</h1>
-    <p>
+    <form action="" method="GET">
+        <label for="obscurity">Obscurity</label><br />
+        <input type="range" id="obscurity" name="obscurity" <?php if(isset($_REQUEST['submit'])) {echo "value=" . $_GET['obscurity'];} ?> min="0" max="10">
+        <input type="submit" name="submit">
+    </form>
         <?php
+        if (isset($_REQUEST['submit'])) {
+            echo "<br />";
+            $token = $_ENV['TMDB_READ_ACCESS_TOKEN'];
             $url = "https://api.themoviedb.org/3/discover/movie?";
             
             // add genre
@@ -67,7 +72,7 @@ $header = "Authorization: Bearer $token";
             $movieIndex = rand(0, (sizeof($data['results']) - 1));
             $movie = $data['results'][$movieIndex];
             echo $movie['title'];
+        }
         ?>
-    </p>
 </body>
 </html>
