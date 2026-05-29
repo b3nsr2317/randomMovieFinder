@@ -1,3 +1,12 @@
+<?php
+require_once realpath(__DIR__ . "/vendor/autoload.php");
+use Dotenv\Dotenv;
+$dotenv = Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+$token = $_ENV['TMDB_READ_ACCESS_TOKEN'];
+$header = "Authorization: Bearer $token";
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,5 +16,58 @@
 </head>
 <body>
     <h1>Random Movie Finder</h1>
+    <p>
+        <?php
+            $url = "https://api.themoviedb.org/3/discover/movie?";
+            
+            // add genre
+            $genres = array(28, 12, 16, 35, 80, 18, 10751, 14, 36, 27, 10402, 9648, 10749, 878, 10770, 53, 10752, 37);
+            $genre = $genres[rand(0, (sizeof($genres) - 1))];
+            $url = $url . "with_genres=$genre";
+
+            // add obscurity (number of reviews)
+            $obscurity = "&vote_count.gte=5000";
+            $url = $url . $obscurity;
+
+            $curl = curl_init();
+            curl_setopt($curl, CURLOPT_URL, $url);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($curl, CURLOPT_HTTPHEADER, [
+                "Authorization: Bearer $token",
+                'accept: application/json'
+            ]);
+            curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'GET');
+            $response = curl_exec($curl);
+            if (curl_errno($curl)){
+                echo "cURL error: " . curl_error($curl);
+                exit;
+            }
+            $data = json_decode($response, true); 
+            $max = ceil($data['total_results']/20.0);
+            // limit max at 500 (api restriction)
+            if ($max > 500) {
+                $max = 500;
+            }
+            $page = 1;
+            if ($max > 1) {
+                $page = rand(1, $max);
+            }
+            $url = $url . "&page=$page";
+            curl_setopt($curl, CURLOPT_URL, $url);
+            $response = curl_exec($curl);
+            if (curl_errno($curl)) {
+                echo "cURL error: " . curl_errno($curl);
+                exit;
+            }
+            $data = json_decode($response, true);
+            if (sizeof($data['results']) < 1) {
+                echo "error: zero array returned";
+                exit;
+            }
+            $movieIndex = rand(0, (sizeof($data['results']) - 1));
+            $movie = $data['results'][$movieIndex];
+            echo $movie['title'];
+        ?>
+    </p>
 </body>
 </html>
