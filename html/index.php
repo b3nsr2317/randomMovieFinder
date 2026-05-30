@@ -34,16 +34,16 @@ $dotenv->load();
 </head>
 <body>
     <h1>Random Movie Finder</h1>
-    <div id="main-content" class="container-fluid">
+    <div id="main-content" class="container">
         <form action="" method="GET">
             <div class="row justify-content-center">
-                <div class="col-2 form-item">
+                <div class="col-lg-2 col-md-6 col-10 form-item">
                     <label for="obscurity">Obscurity</label><br />
                     <input type="range" id="obscurity" name="obscurity" <?php if(isset($_REQUEST['submit'])) {echo "value=" . $_GET['obscurity'];} else {echo "value=5";} ?> min="0" max="10">
                 </div>
             </div>
             <div class="row justify-content-center">
-                <input type="submit" name="submit" value="Get Movie" class="col-2 form-item">
+                <input type="submit" name="submit" value="Get Movie" class="col-lg-2 col-md-6 col-10 form-item">
             </div>
         </form>
         <br />
