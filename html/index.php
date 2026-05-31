@@ -149,3 +149,5 @@ $dotenv->load();
         ></script>
 </body>
 </html>
+<!-- This website uses <TMDBLogo> and the TMDB APIs<link to api> but is not endorsed, certified, or otherwise approved by <TMDBLogo>. -->
+<!-- Streaming data powered by <JustWatchLogo> -->
