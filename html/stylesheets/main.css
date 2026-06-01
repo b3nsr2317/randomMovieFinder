@@ -22,19 +22,28 @@ p {
 }
 
 a {
-    color: rgb(10, 10, 10);
+    color: #dfdfff;
 }
 
 a:hover {
-    color: rgb(50, 50, 50);
+    color: #afafef;
 }
 
-a:active {
-    color: rgb(100, 100, 100);
+header {
+    height: 10vh;
 }
 
 #main-content {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
     padding: 10px;
+    min-height: 80vh;
+}
+
+footer {
+    background-color: #000010;
+    height: 10vh;
 }
 
 .form-item {

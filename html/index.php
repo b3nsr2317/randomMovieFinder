@@ -33,7 +33,9 @@ $dotenv->load();
     <link href="./stylesheets/main.css" rel="stylesheet">
 </head>
 <body>
-    <h1>Random Movie Finder</h1>
+    <header>
+        <h1>Random Movie Finder</h1>
+    </header>
     <div id="main-content" class="container">
         <form action="" method="GET">
             <div class="row justify-content-center">
@@ -141,6 +143,9 @@ $dotenv->load();
                     ?>
         </div>
     </div>
+    <footer>
+        <p>This website uses <a href="https://www.themoviedb.org/"><img src="./images/TMDB.svg" alt="TMDB" width="30pt"></a> and the <a href="https://developer.themoviedb.org">TMDB APIs</a> but is not endorsed, certified, or otherwise approved by <a href="https://www.themoviedb.org/"><img src="./images/TMDB.svg" alt="TMDB" width="30pt"></a>.</p>
+    </footer>
         <!-- Bootstrap Import -->
         <script
             src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
