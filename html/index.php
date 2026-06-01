@@ -144,7 +144,8 @@ $dotenv->load();
         </div>
     </div>
     <footer>
-        <p>This website uses <a href="https://www.themoviedb.org/"><img src="./images/TMDB.svg" alt="TMDB" width="30pt"></a> and the <a href="https://developer.themoviedb.org">TMDB APIs</a> but is not endorsed, certified, or otherwise approved by <a href="https://www.themoviedb.org/"><img src="./images/TMDB.svg" alt="TMDB" width="30pt"></a>.</p>
+        <p>This website uses <a href="https://www.themoviedb.org/" target="_blank"><img src="./images/TMDB.svg" alt="TMDB" height="15pt"></a> and the <a href="https://developer.themoviedb.org" target="_blank">TMDB APIs</a> but is not endorsed, certified, or otherwise approved by <a href="https://www.themoviedb.org/" target="_blank"><img src="./images/TMDB.svg" alt="TMDB" width="30pt"></a>.</p>
+        <p>Streaming data powered by <a href="https://www.justwatch.com/" target="_blank"><img src="./images/JustWatch.svg" alt="JustWatch" height="15pt"></a></p>
     </footer>
         <!-- Bootstrap Import -->
         <script
