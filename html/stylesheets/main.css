@@ -43,7 +43,7 @@ header {
 
 footer {
     background-color: #000010;
-    height: 10vh;
+    min-height: 10vh;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
