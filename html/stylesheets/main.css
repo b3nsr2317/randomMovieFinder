@@ -53,3 +53,16 @@ footer {
 .form-item {
     text-align: center;
 }
+
+#genre-dropdown-container {
+    margin-bottom: 20px;
+}
+
+#genre-dropdown {
+    width: 100%;
+}
+
+.dropdown-list {
+    padding: 0;
+    width: 100%;
+}

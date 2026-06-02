@@ -37,11 +37,66 @@ $dotenv->load();
         <h1>Random Movie Finder</h1>
     </header>
     <div id="main-content" class="container">
-        <form action="" method="GET">
+        <form action="" method="POST">
             <div class="row justify-content-center">
-                <div class="col-lg-2 col-md-6 col-10 form-item">
-                    <label for="obscurity">Obscurity</label><br />
-                    <input type="range" id="obscurity" name="obscurity" <?php if(isset($_REQUEST['submit'])) {echo "value=" . $_GET['obscurity'];} else {echo "value=5";} ?> min="0" max="10">
+                <div id="genre-dropdown-container" class="col-lg-2 col-md-6 col-10">
+                    <div class="dropdown w-100">
+                        <button id="genre-dropdown" class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Genre
+                        </button>
+                        <div class="dropdown-menu w-100">
+                            <ul class="dropdown-list">
+                                <?php
+                                $genreList = array(
+                                "Action"=>"28"
+                                ,"Adventure"=>"12"
+                                ,"Animation"=>"16"
+                                ,"Comedy"=>"35"
+                                ,"Crime"=>"80"
+                                ,"Drama"=>"18"
+                                ,"Family"=>"10751"
+                                ,"Fantasy"=>"14"
+                                ,"History"=>"36"
+                                ,"Horror"=>"27"
+                                ,"Music"=>"10402"
+                                ,"Mystery"=>"9648"
+                                ,"Romance"=>"10749"
+                                ,"Science Fiction"=>"878"
+                                ,"TV Movie"=>"10770"
+                                ,"Thriller"=>"53"
+                                ,"War"=>"10752"
+                                ,"Western"=>"37");
+                                foreach ($genreList as $g => $c) {
+                                    $checked = true;
+                                    if (isset($_REQUEST['submit'])) {
+                                        if (! in_array($c, $_POST['genres'])) {
+                                            $checked = false;
+                                        }
+                                    }
+                                    echo "<li class=\"dropdown-item\"><label class=\"w-100\"><input type=\"checkbox\"";
+                                    if ($checked) {
+                                        echo " checked ";
+                                    }
+                                    echo "name=\"genres[]\" value=\"$c\"> $g</label></li>";
+                                //<li class="dropdown-item"><label class="w-100"><input type="checkbox" checked name="genres[]" value="code"> Genre</label></li>
+                                }
+                                ?>
+                            </ul>
+                            <script>
+                                document.querySelectorAll('.dropdown-menu label').forEach(label => {
+                                    label.addEventListener('click', function(e) {
+                                        e.stopPropagation(); 
+                                    });
+                                });
+                            </script>
+                    </div>
+                </div>
+                </div>
+            </div>
+                <div class="row justify-content-center">
+                    <div class="col-lg-2 col-md-6 col-10 form-item">
+                        <label for="obscurity">Obscurity</label><br />
+                    <input type="range" id="obscurity" name="obscurity" <?php if(isset($_REQUEST['submit'])) {echo "value=" . $_POST['obscurity'];} else {echo "value=5";} ?> min="0" max="10">
                 </div>
             </div>
             <div class="row justify-content-center">
@@ -59,12 +114,12 @@ $dotenv->load();
                 $url = "https://api.themoviedb.org/3/discover/movie?";
                 
                 // add genre
-                $genres = array(28, 12, 16, 35, 80, 18, 10751, 14, 36, 27, 10402, 9648, 10749, 878, 10770, 53, 10752, 37);
+                $genres = $_POST['genres'];
                 $genre = $genres[rand(0, (sizeof($genres) - 1))];
                 $url = $url . "with_genres=$genre";
 
                 // add obscurity (number of reviews)
-                switch ($_GET['obscurity']) {
+                switch ($_POST['obscurity']) {
                     case 0:
                         $obscurity = "&vote_count.gte=5000";
                         break;
