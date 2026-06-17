@@ -1,4 +1,5 @@
 <?php
+require realpath(__DIR__ . "/../movieCard.php");
 require_once realpath(__DIR__ . "/../vendor/autoload.php");
 use Dotenv\Dotenv;
 $dotenv = Dotenv::createImmutable(__DIR__ . "/../");
@@ -69,7 +70,11 @@ $dotenv->load();
                                 foreach ($genreList as $g => $c) {
                                     $checked = true;
                                     if (isset($_REQUEST['submit'])) {
-                                        if (! in_array($c, $_POST['genres'])) {
+                                        if (isset($_POST['genres'])) {
+                                            if (! in_array($c, $_POST['genres'])) {
+                                                $checked = false;
+                                            }
+                                        } else {
                                             $checked = false;
                                         }
                                     }
@@ -105,96 +110,102 @@ $dotenv->load();
         </form>
         <br />
         <br />
-        <div class="row justify-content-center">
+        <div class="row justify-content-center g-0">
         <?php
         if (isset($_REQUEST['submit'])) {
             $complete = false;
-            while (!$complete) {
-                $token = $_ENV['TMDB_READ_ACCESS_TOKEN'];
-                $url = "https://api.themoviedb.org/3/discover/movie?";
-                
-                // add genre
-                $genres = $_POST['genres'];
-                $genre = $genres[rand(0, (sizeof($genres) - 1))];
-                $url = $url . "with_genres=$genre";
+            if (!isset($_POST['genres'])) {
+                echo "please select at least 1 genre";
+            } else {
+                while (!$complete) {
+                    $token = $_ENV['TMDB_READ_ACCESS_TOKEN'];
+                    $url = "https://api.themoviedb.org/3/discover/movie?";
+                    
+                    // add genre
+                    $genres = $_POST['genres'];
+                    $genre = $genres[rand(0, (sizeof($genres) - 1))];
+                    $url = $url . "with_genres=$genre";
 
-                // add obscurity (number of reviews)
-                switch ($_POST['obscurity']) {
-                    case 0:
-                        $obscurity = "&vote_count.gte=5000";
-                        break;
-                        case 1:
-                        $obscurity = "&vote_count.gte=3000";
-                        break;
-                    case 2:
-                        $obscurity = "&vote_count.gte=1500";
-                        break;
-                    case 3:
-                        $obscurity = "&vote_count.gte=750";
-                        break;
-                        case 4:
-                            $obscurity = "&vote_count.gte=300";
+                    // add obscurity (number of reviews)
+                    switch ($_POST['obscurity']) {
+                        case 0:
+                            $obscurity = "&vote_count.gte=5000";
                             break;
-                            case 5:
-                                $obscurity = "&vote_count.gte=150";
-                        break;
-                        case 6:
-                            $obscurity = "&vote_count.gte=150&vote_count.lte=3000";
+                            case 1:
+                            $obscurity = "&vote_count.gte=3000";
                             break;
-                            case 7:
-                                $obscurity = "&vote_count.gte=100&vote_count.lte=1000";
+                        case 2:
+                            $obscurity = "&vote_count.gte=1500";
+                            break;
+                        case 3:
+                            $obscurity = "&vote_count.gte=750";
+                            break;
+                            case 4:
+                                $obscurity = "&vote_count.gte=300";
                                 break;
-                                case 8:
-                                    $obscurity = "&vote_count.gte=100&vote_count.lte=500";
+                                case 5:
+                                    $obscurity = "&vote_count.gte=150";
+                            break;
+                            case 6:
+                                $obscurity = "&vote_count.gte=150&vote_count.lte=3000";
+                                break;
+                                case 7:
+                                    $obscurity = "&vote_count.gte=100&vote_count.lte=1000";
                                     break;
-                                    case 9:
-                                        $obscurity = "&vote_count.gte=50&vote_count.lte=150";
+                                    case 8:
+                                        $obscurity = "&vote_count.gte=100&vote_count.lte=500";
                                         break;
-                                        case 10:
-                                            $obscurity = "&vote_count.gte=20&vote_count.lte=50";
+                                        case 9:
+                                            $obscurity = "&vote_count.gte=50&vote_count.lte=150";
                                             break;
-                                            }
-                $url = $url . $obscurity;
-                
-                $curl = curl_init();
-                curl_setopt($curl, CURLOPT_URL, $url);
-                curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($curl, CURLOPT_HTTPHEADER, [
-                    "Authorization: Bearer $token",
-                    'accept: application/json'
-                    ]);
-                    curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'GET');
-                    $response = curl_exec($curl);
-                    if (curl_errno($curl)){
-                        echo "cURL error: " . curl_error($curl);
-                        exit;
+                                            case 10:
+                                                $obscurity = "&vote_count.gte=20&vote_count.lte=50";
+                                                break;
+                                                }
+                    $url = $url . $obscurity;
+                    
+                    $curl = curl_init();
+                    curl_setopt($curl, CURLOPT_URL, $url);
+                    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($curl, CURLOPT_HTTPHEADER, [
+                        "Authorization: Bearer $token",
+                        'accept: application/json'
+                        ]);
+                        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'GET');
+                        $response = curl_exec($curl);
+                        if (curl_errno($curl)){
+                            echo "cURL error: " . curl_error($curl);
+                            exit;
+                            }
+                    $data = json_decode($response, true); 
+                    $max = ceil($data['total_results']/20.0);
+                    // limit max at 500 (api restriction)
+                    if ($max > 500) {
+                        $max = 500;
                         }
-                $data = json_decode($response, true); 
-                $max = ceil($data['total_results']/20.0);
-                // limit max at 500 (api restriction)
-                if ($max > 500) {
-                    $max = 500;
+                    $page = 1;
+                    if ($max > 1) {
+                        $page = rand(1, $max);
+                        }
+                        $url = $url . "&page=$page";
+                    curl_setopt($curl, CURLOPT_URL, $url);
+                    $response = curl_exec($curl);
+                    if (curl_errno($curl)) {
+                        echo "cURL error: " . curl_errno($curl);
+                        exit;
                     }
-                $page = 1;
-                if ($max > 1) {
-                    $page = rand(1, $max);
+                    $data = json_decode($response, true);
+                    if (sizeof($data['results']) > 1) {
+                        $movieIndex = rand(0, (sizeof($data['results']) - 1));
+                        $movie = $data['results'][$movieIndex];
+                        echo "<br /><div class='col'>";
+                        echo getMovieCard($movie);
+                        echo "</div>";
+                        $complete = true;
                     }
-                    $url = $url . "&page=$page";
-                curl_setopt($curl, CURLOPT_URL, $url);
-                $response = curl_exec($curl);
-                if (curl_errno($curl)) {
-                    echo "cURL error: " . curl_errno($curl);
-                    exit;
                 }
-                $data = json_decode($response, true);
-                if (sizeof($data['results']) > 1) {
-                    $movieIndex = rand(0, (sizeof($data['results']) - 1));
-                    $movie = $data['results'][$movieIndex];
-                    echo "<br />" . $movie['title'];
-                    $complete = true;
-                    }
-                    }
-                    }
+            }
+        }
                     ?>
         </div>
     </div>
