@@ -76,3 +76,17 @@ footer {
     height: 500px;
     width: 333.33px;
 }
+
+#card-link {
+    display: block;
+    background-color: rgba(0, 0, 0, 0.3);
+    opacity: 0;
+}
+
+#card-link:hover {
+    opacity: 1;
+}
+
+#card-overlay {
+    color: #dfdfff;
+}
