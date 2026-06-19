@@ -5,9 +5,11 @@ function getMovieCard($movie) {
     // link to tmdb
     $result = $result . "<a id='card-link' class='w-100 h-100' href='https://www.themoviedb.org/movie/" . $movie['id'] . "/watch' target='_blank'>";
     // overlay div
-    $result = $result . "<div id='card-overlay' class='h-75 d-flex align-items-center justify-content-center'><h2>";
+    $result = $result . "<div id='card-overlay' class='d-flex align-items-center justify-content-center'><h2>";
     $result = $result . $movie['title'] . " - " . substr($movie['release_date'], 0, 4);
-    $result = $result . "</h2></div>";
+    $result = $result . "</h2>";
+    $result = $result . "<img class='click-indicator align-self-right' src='./images/link.png' alt='pointer cursor'>";
+    $result = $result . "</div>";
     $result = $result . "</a>";
     $result = $result . "</div>";
     return $result;

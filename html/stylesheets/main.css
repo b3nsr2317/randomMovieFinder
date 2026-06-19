@@ -79,13 +79,27 @@ footer {
 
 #card-link {
     display: block;
-    background-color: rgba(0, 0, 0, 0.3);
+    /* background-color: rgba(0, 0, 0, 0.3); */
     opacity: 0;
+}
+
+.click-indicator {
+    visibility: hidden;
+    height: 0;
+    padding: 0;
+    border-radius: 16px;
+    background-color: rgba(0, 0, 0, 0.5);
 }
 
 @media screen and (max-width: 768px) {
     #card-link {
         opacity: 1;
+    }
+
+    .click-indicator {
+        visibility: visible;
+        height: 32px;
+        padding: 0 7px;
     }
 }
 
@@ -95,4 +109,6 @@ footer {
 
 #card-overlay {
     color: #dfdfff;
+    background-color: rgba(0, 0, 0, 0.3);
+    min-height: 50px;
 }
