@@ -67,6 +67,7 @@ $dotenv->load();
                                 ,"Thriller"=>"53"
                                 ,"War"=>"10752"
                                 ,"Western"=>"37");
+                                echo "<li class=\"dropdown-item\"><label class=\"w-100\"><input type=\"checkbox\" checked name=\"select-all\" id=\"all-genres-checked\"> Select All</label></li>";
                                 foreach ($genreList as $g => $c) {
                                     $checked = true;
                                     if (isset($_REQUEST['submit'])) {
@@ -78,20 +79,58 @@ $dotenv->load();
                                             $checked = false;
                                         }
                                     }
-                                    echo "<li class=\"dropdown-item\"><label class=\"w-100\"><input type=\"checkbox\"";
+                                    echo "<li class=\"dropdown-item\"><label class=\"w-100 genre-label\"><input type=\"checkbox\"";
                                     if ($checked) {
                                         echo " checked ";
                                     }
                                     echo "name=\"genres[]\" value=\"$c\"> $g</label></li>";
-                                //<li class="dropdown-item"><label class="w-100"><input type="checkbox" checked name="genres[]" value="code"> Genre</label></li>
+                                //<li class="dropdown-item"><label class="w-100 genre-label"><input type="checkbox" checked name="genres[]" value="code"> Genre</label></li>
                                 }
                                 ?>
                             </ul>
                             <script>
-                                document.querySelectorAll('.dropdown-menu label').forEach(label => {
+                                checkSelectAll();
+                                // stop clicks inside list closing the dropdown
+                                document.querySelectorAll('.genre-label').forEach(label => {
+                                    label.addEventListener('click', function(e) {
+                                        checkSelectAll();
+                                        e.stopPropagation(); 
+                                    });
+                                });
+
+                                document.querySelectorAll('.dropdown-menu').forEach(label => {
                                     label.addEventListener('click', function(e) {
                                         e.stopPropagation(); 
                                     });
+                                });
+
+
+                                // check if all are selected
+                                function checkSelectAll() {
+                                    items = document.getElementsByName("genres[]");
+                                    allChecked = true;
+                                    for (i = 0; i < items.length; i++) {
+                                        if (! items[i].checked) {
+                                            allChecked = false;
+                                            break;
+                                        }
+                                    }
+                                    if (allChecked) {
+                                        document.getElementById("all-genres-checked").checked = true;
+                                    } else {
+                                        document.getElementById("all-genres-checked").checked = false;
+                                    }
+                                }
+
+                                document.getElementById("all-genres-checked").addEventListener('click', function() {
+                                    check = false;
+                                    if (document.getElementById("all-genres-checked").checked) {
+                                        check = true;
+                                    }
+                                    items = document.getElementsByName("genres[]");
+                                    for (i = 0; i < items.length; i++) {
+                                        items[i].checked = check;
+                                    }
                                 });
                             </script>
                     </div>

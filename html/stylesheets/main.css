@@ -67,6 +67,10 @@ footer {
     width: 100%;
 }
 
+.dropdown-item {
+    user-select: none;
+}
+
 #movie-card {
     align-self: center;
     text-align: center;
