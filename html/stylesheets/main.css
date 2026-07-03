@@ -5,6 +5,7 @@ body {
     background-color: #000025;
     font-family: "Inter", sans-serif;
     font-weight: 300;
+    font-size: 1rem;
 }
 
 h1 {
@@ -19,6 +20,7 @@ h1 {
 p {
     display: block;
     width: fit-content;
+    font-size: 1rem;
 }
 
 a {
@@ -52,6 +54,36 @@ footer {
 
 .form-item {
     text-align: center;
+}
+
+.circled-question {
+    position: relative;
+    display: inline-block;
+    border: solid;
+    border-radius: 1000vh;
+    border-width: 1px;
+    padding: 0px 5px;
+    font-size: 0.7rem;
+    vertical-align: 10%;
+}
+
+.circled-question .tooltip-box {
+    display: block;
+    padding: 10px;
+    border-radius: 5px;
+    width: 0px;
+    position: absolute;
+    top: -40px;
+    left: 10px;
+    visibility: hidden;
+    background-color: #dfdfff;
+    color: #000025;
+}
+
+.circled-question:hover .tooltip-box {
+    width: 300px;
+    max-width: 30vw;
+    visibility: visible;
 }
 
 #genre-dropdown-container {
@@ -105,7 +137,7 @@ footer {
         visibility: visible;
         height: 32px;
         width: 32px;
-        padding: 0 4px;
+        padding: 6px 8px;
     }
 }
 

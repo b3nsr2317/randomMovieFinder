@@ -139,7 +139,7 @@ $dotenv->load();
             </div>
                 <div class="row justify-content-center">
                     <div class="col-lg-2 col-md-6 col-10 form-item">
-                        <label for="obscurity">Obscurity</label><br />
+                        <label for="obscurity">Obscurity <span class="circled-question">?<div class="tooltip-box">This is an estimate of how well known the movie is.<br />Set slider to the centre for the "most random" result</div></span></label><br />
                     <input type="range" id="obscurity" name="obscurity" <?php if(isset($_REQUEST['submit'])) {echo "value=" . $_POST['obscurity'];} else {echo "value=5";} ?> min="0" max="10">
                 </div>
             </div>
@@ -249,8 +249,9 @@ $dotenv->load();
         </div>
     </div>
     <footer>
-        <p>This website uses <a href="https://www.themoviedb.org/" target="_blank"><img src="./images/TMDB.svg" alt="TMDB" height="15pt"></a> and the <a href="https://developer.themoviedb.org" target="_blank">TMDB APIs</a> but is not endorsed, certified, or otherwise approved by <a href="https://www.themoviedb.org/" target="_blank"><img src="./images/TMDB.svg" alt="TMDB" width="30pt"></a>.</p>
-        <p>Streaming data powered by <a href="https://www.justwatch.com/" target="_blank"><img src="./images/JustWatch.svg" alt="JustWatch" height="15pt"></a></p>
+        <p>This website uses <a href="https://www.themoviedb.org/" target="_blank"><img src="./images/TMDB.svg" alt="TMDB" height="15pt"></a> and the <a href="https://developer.themoviedb.org" target="_blank">TMDB APIs</a> but is not endorsed, certified, or otherwise approved by <a href="https://www.themoviedb.org/" target="_blank"><img src="./images/TMDB.svg" alt="TMDB" width="30pt"></a>. 
+        Streaming data powered by <a href="https://www.justwatch.com/" target="_blank"><img src="./images/JustWatch.svg" alt="JustWatch" height="15pt"></a></p>
+        <p>View more of my projects at <a href="https://www.ben-robertson.com/projects/">ben-robertson.com</a>.</p>
     </footer>
         <!-- Bootstrap Import -->
         <script
