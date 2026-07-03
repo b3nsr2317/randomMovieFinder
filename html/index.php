@@ -1,5 +1,6 @@
 <?php
 require realpath(__DIR__ . "/../movieCard.php");
+require realpath(__DIR__ . "/../movieProviders.php");
 require_once realpath(__DIR__ . "/../vendor/autoload.php");
 use Dotenv\Dotenv;
 $dotenv = Dotenv::createImmutable(__DIR__ . "/../");
@@ -48,6 +49,7 @@ $dotenv->load();
                         <div class="dropdown-menu w-100">
                             <ul class="dropdown-list">
                                 <?php
+                                // Generate list of all genres as dropdown items
                                 $genreList = array(
                                 "Action"=>"28"
                                 ,"Adventure"=>"12"
@@ -68,6 +70,7 @@ $dotenv->load();
                                 ,"War"=>"10752"
                                 ,"Western"=>"37");
                                 echo "<li class=\"dropdown-item\"><label class=\"w-100\"><input type=\"checkbox\" checked name=\"select-all\" id=\"all-genres-checked\"> Select All</label></li>";
+                                // check if checkbox should be checked
                                 foreach ($genreList as $g => $c) {
                                     $checked = true;
                                     if (isset($_REQUEST['submit'])) {
@@ -240,6 +243,27 @@ $dotenv->load();
                         echo "<br /><div class='col'>";
                         echo getMovieCard($movie);
                         echo "</div>";
+                        $providersUrl = "https://api.themoviedb.org/3/movie/" . $movie['id'] . "/watch/providers";
+                        curl_setopt($curl, CURLOPT_URL, $providersUrl);
+                        $providers = curl_exec($curl);
+                        if (curl_errno($curl)) {
+                            echo "cURL error: " . curl_errno($curl);
+                            exit;
+                        }
+                        $providers = json_decode($providers, true);
+                        $streamingProvidersImages = displayStreamingProviders($providers['results'], 'GB');
+                        $rentalProvidersImages = displayRentalProviders($providers['results'], 'GB');
+                        $purchaseProvidersImages = displayPurchaseProviders($providers['results'], 'GB');
+                        echo "<br /><div class='row providers-container'><a href='https://www.themoviedb.org/movie/" . $movie['id'] . "/watch' target='_blank'>";
+                        echo "<p style='display: inline-block'>Stream: </p>";
+                        echo $streamingProvidersImages;
+                        echo "</div><div class='row providers-container'><a href='https://www.themoviedb.org/movie/" . $movie['id'] . "/watch' target='_blank'>";
+                        echo "<p style='display: inline-block'>Rent: </p>";
+                        echo $rentalProvidersImages;
+                        echo "</div><div class='row providers-container'><a href='https://www.themoviedb.org/movie/" . $movie['id'] . "/watch' target='_blank'>";
+                        echo "<p style='display: inline-block'>Buy: </p>";
+                        echo $purchaseProvidersImages;
+                        echo "</a></div>";
                         $complete = true;
                     }
                 }

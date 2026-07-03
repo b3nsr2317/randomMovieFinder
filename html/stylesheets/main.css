@@ -150,3 +150,19 @@ footer {
     background-color: rgba(0, 0, 0, 0.3);
     min-height: 50px;
 }
+
+.provider-logo {
+    display: inline-block;
+    width: 45px;
+    height: 45px;
+    padding: 0;
+    margin-left: 5px;
+    border-radius: 5px;
+}
+
+.providers-container {
+    margin-top: 20px;
+    display: block;
+    width: 100%;
+    text-align: center;
+}
