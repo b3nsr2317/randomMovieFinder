@@ -32,7 +32,7 @@ $dotenv->load();
     href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css"
     />
 
-    <link href="./stylesheets/main.css?v=202607031106" rel="stylesheet">
+    <link href="./stylesheets/main.css?v=202607031438" rel="stylesheet">
 </head>
 <body>
     <header>
