@@ -3,7 +3,7 @@
 function displayStreamingProviders($providers, $region) {
     // Check if entry exists for region code
     if (!isset($providers[$region])) {
-        $result = "Error: Region code not recognised";
+        $result = "Not available to stream";
         return $result;
     }
 
@@ -24,7 +24,7 @@ function displayStreamingProviders($providers, $region) {
 function displayRentalProviders($providers, $region) {
     // Check if entry exists for region code
     if (!isset($providers[$region])) {
-        $result = "Error: Region code not recognised";
+        $result = "Not available to rent";
         return $result;
     }
 
@@ -45,7 +45,7 @@ function displayRentalProviders($providers, $region) {
 function displayPurchaseProviders($providers, $region) {
     // Check if entry exists for region code
     if (!isset($providers[$region])) {
-        $result = "Error: Region code not recognised";
+        $result = "Not available to purchase";
         return $result;
     }
 
