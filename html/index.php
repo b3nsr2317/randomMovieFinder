@@ -264,6 +264,7 @@ $dotenv->load();
                         echo "<p style='display: inline-block'>Buy: </p>";
                         echo $purchaseProvidersImages;
                         echo "</a></div>";
+                        echo "<br /><a class=\"row mx-auto jw-link\" href=\"https://www.justwatch.com/\" target=\"_blank\"><p class=\"m-0\" style=\"display: inline-block; text-align: center;\">Powered By <img src=\"./images/JustWatch.svg\" alt=\"JustWatch\" height=\"15pt\"></p></a>";
                         $complete = true;
                     }
                 }
