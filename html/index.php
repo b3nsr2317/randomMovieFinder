@@ -32,7 +32,7 @@ $dotenv->load();
     href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css"
     />
 
-    <link href="./stylesheets/main.css?v=202607031438" rel="stylesheet">
+    <link href="./stylesheets/main.css?v=202607071318" rel="stylesheet">
 </head>
 <body>
     <header>
@@ -92,11 +92,11 @@ $dotenv->load();
                                 ?>
                             </ul>
                             <script>
-                                checkSelectAll();
+                                checkGenreSelectAll();
                                 // stop clicks inside list closing the dropdown
                                 document.querySelectorAll('.genre-label').forEach(label => {
                                     label.addEventListener('click', function(e) {
-                                        checkSelectAll();
+                                        checkGenreSelectAll();
                                         e.stopPropagation(); 
                                     });
                                 });
@@ -109,7 +109,7 @@ $dotenv->load();
 
 
                                 // check if all are selected
-                                function checkSelectAll() {
+                                function checkGenreSelectAll() {
                                     items = document.getElementsByName("genres[]");
                                     allChecked = true;
                                     for (i = 0; i < items.length; i++) {
@@ -131,6 +131,85 @@ $dotenv->load();
                                         check = true;
                                     }
                                     items = document.getElementsByName("genres[]");
+                                    for (i = 0; i < items.length; i++) {
+                                        items[i].checked = check;
+                                    }
+                                });
+                            </script>
+                    </div>
+                </div>
+                <div id="services-dropdown-container" class="col-lg-2 col-md-6 col-10">
+                    <div class="dropdown w-100">
+                        <button id="services-dropdown" class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Streaming Services
+                        </button>
+                        <div class="dropdown-menu w-100">
+                            <ul class="dropdown-list">
+                                <?php
+                                // Generate list of all services as dropdown items
+                                $serviceList = array();
+                                echo "<li class=\"dropdown-item\"><label class=\"w-100\"><input type=\"checkbox\" checked name=\"select-all\" id=\"all-streaming-checked\"> Select All</label></li>";
+                                // check if checkbox should be checked
+                                foreach ($servicesList as $g => $c) {
+                                    $checked = false;
+                                    if (isset($_REQUEST['submit'])) {
+                                        if (isset($_POST['services'])) {
+                                            if (! in_array($c, $_POST['services'])) {
+                                                $checked = false;
+                                            }
+                                        } else {
+                                            $checked = false;
+                                        }
+                                    }
+                                    echo "<li class=\"dropdown-item\"><label class=\"w-100 service-label\"><input type=\"checkbox\"";
+                                    if ($checked) {
+                                        echo " checked ";
+                                    }
+                                    echo "name=\"services[]\" value=\"$c\"> $g</label></li>";
+                                //<li class="dropdown-item"><label class="w-100 service-label"><input type="checkbox" checked name="services[]" value="code"> Service</label></li>
+                                }
+                                ?>
+                            </ul>
+                            <script>
+                                checkServicesSelectAll();
+                                // stop clicks inside list closing the dropdown
+                                document.querySelectorAll('.genre-label').forEach(label => {
+                                    label.addEventListener('click', function(e) {
+                                        checkServicesSelectAll();
+                                        e.stopPropagation(); 
+                                    });
+                                });
+
+                                document.querySelectorAll('.dropdown-menu').forEach(label => {
+                                    label.addEventListener('click', function(e) {
+                                        e.stopPropagation(); 
+                                    });
+                                });
+
+
+                                // check if all are selected
+                                function checkServicesSelectAll() {
+                                    items = document.getElementsByName("services[]");
+                                    allChecked = true;
+                                    for (i = 0; i < items.length; i++) {
+                                        if (! items[i].checked) {
+                                            allChecked = false;
+                                            break;
+                                        }
+                                    }
+                                    if (allChecked) {
+                                        document.getElementById("all-services-checked").checked = true;
+                                    } else {
+                                        document.getElementById("all-services-checked").checked = false;
+                                    }
+                                }
+
+                                document.getElementById("all-services-checked").addEventListener('click', function() {
+                                    check = false;
+                                    if (document.getElementById("all-services-checked").checked) {
+                                        check = true;
+                                    }
+                                    items = document.getElementsByName("services[]");
                                     for (i = 0; i < items.length; i++) {
                                         items[i].checked = check;
                                     }
