@@ -120,6 +120,8 @@ footer {
 }
 
 .click-indicator {
+    position: absolute;
+    right: 5px;
     visibility: hidden;
     height: 0;
     width: 0;
@@ -138,6 +140,10 @@ footer {
         height: 32px;
         width: 32px;
         padding: 6px 8px;
+    }
+
+    .movie-title-text {
+        padding: 0 40px;
     }
 }
 
