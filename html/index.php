@@ -5,6 +5,25 @@ require_once realpath(__DIR__ . "/../vendor/autoload.php");
 use Dotenv\Dotenv;
 $dotenv = Dotenv::createImmutable(__DIR__ . "/../");
 $dotenv->load();
+
+$token = $_ENV['TMDB_READ_ACCESS_TOKEN'];
+
+$region = "GB";
+
+session_start();
+if (!isset($_SESSION["sessionStart"])) {
+    $_SESSION["sessionStart"] = microtime(true);
+} elseif ((microtime(true) - $_SESSION["sessionStart"])/60000000 > 30) {
+    session_unset();
+}
+if (isset($_SESSION["servicesRegion"])) {
+    if (! $_SESSION["servicesRegion"] == $region) {
+        $_SESSION["services"] = getServices($region, $token);
+        }
+} else {
+    $_SESSION["services"] = getServices($region, $token);
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -40,6 +59,7 @@ $dotenv->load();
     </header>
     <div id="main-content" class="container">
         <form action="" method="POST">
+            <!-- container for genre selector -->
             <div class="row justify-content-center">
                 <div id="genre-dropdown-container" class="col-lg-2 col-md-6 col-10">
                     <div class="dropdown w-100">
@@ -69,8 +89,9 @@ $dotenv->load();
                                 ,"Thriller"=>"53"
                                 ,"War"=>"10752"
                                 ,"Western"=>"37");
+                                // select/deselect all checkbox
                                 echo "<li class=\"dropdown-item\"><label class=\"w-100\"><input type=\"checkbox\" checked name=\"select-all\" id=\"all-genres-checked\"> Select All</label></li>";
-                                // check if checkbox should be checked
+                                // check if each checkbox should be checked
                                 foreach ($genreList as $g => $c) {
                                     $checked = true;
                                     if (isset($_REQUEST['submit'])) {
@@ -82,6 +103,7 @@ $dotenv->load();
                                             $checked = false;
                                         }
                                     }
+                                    // list item for each genre
                                     echo "<li class=\"dropdown-item\"><label class=\"w-100 genre-label\"><input type=\"checkbox\"";
                                     if ($checked) {
                                         echo " checked ";
@@ -101,14 +123,7 @@ $dotenv->load();
                                     });
                                 });
 
-                                document.querySelectorAll('.dropdown-menu').forEach(label => {
-                                    label.addEventListener('click', function(e) {
-                                        e.stopPropagation(); 
-                                    });
-                                });
-
-
-                                // check if all are selected
+                                // check if all genres are selected
                                 function checkGenreSelectAll() {
                                     items = document.getElementsByName("genres[]");
                                     allChecked = true;
@@ -136,8 +151,11 @@ $dotenv->load();
                                     }
                                 });
                             </script>
+                        </div>
                     </div>
                 </div>
+            </div>
+            <div class="row justify-content-center">
                 <div id="services-dropdown-container" class="col-lg-2 col-md-6 col-10">
                     <div class="dropdown w-100">
                         <button id="services-dropdown" class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -146,11 +164,36 @@ $dotenv->load();
                         <div class="dropdown-menu w-100">
                             <ul class="dropdown-list">
                                 <?php
-                                // Generate list of all services as dropdown items
+                                function getServices($region, $token) {
+                                    // get providers for region
+                                    $_SESSION["servicesRegion"] = $region;
+                                    $providersUrl = "https://api.themoviedb.org/3/watch/providers/movie?watch_region=" . $region;
+                                    $providersCurl = curl_init();
+                                    curl_setopt($providersCurl, CURLOPT_URL, $providersUrl);
+                                    curl_setopt($providersCurl, CURLOPT_RETURNTRANSFER, true);
+                                    curl_setopt($providersCurl, CURLOPT_HTTPHEADER, [
+                                        "Authorization: Bearer $token",
+                                        'accept: application/json'
+                                        ]);
+                                        curl_setopt($providersCurl, CURLOPT_CUSTOMREQUEST, 'GET');
+                                        $response = curl_exec($providersCurl);
+                                        if (curl_errno($providersCurl)){
+                                            echo "cURL error: " . curl_error($providersCurl);
+                                            exit;
+                                            }
+                                    $data = json_decode($response, true);
+                                    $services = array_values($data['results']);
+                                    return $services;
+                                }
+                                $services = $_SESSION["services"];
                                 $serviceList = array();
-                                echo "<li class=\"dropdown-item\"><label class=\"w-100\"><input type=\"checkbox\" checked name=\"select-all\" id=\"all-streaming-checked\"> Select All</label></li>";
+                                for ($i = 0; $i < sizeof($services); $i++) {
+                                    $serviceList += [$services[$i]['provider_name'] => $services[$i]['provider_id']];
+                                }
+                                // Generate list of all services as dropdown items
+                                echo "<li class=\"dropdown-item\"><label class=\"w-100\"><input type=\"checkbox\" checked name=\"select-all\" id=\"all-services-checked\"> Select All</label></li>";
                                 // check if checkbox should be checked
-                                foreach ($servicesList as $g => $c) {
+                                foreach ($serviceList as $s => $c) {
                                     $checked = false;
                                     if (isset($_REQUEST['submit'])) {
                                         if (isset($_POST['services'])) {
@@ -165,7 +208,7 @@ $dotenv->load();
                                     if ($checked) {
                                         echo " checked ";
                                     }
-                                    echo "name=\"services[]\" value=\"$c\"> $g</label></li>";
+                                    echo "name=\"services[]\" value=\"$c\"> $s</label></li>";
                                 //<li class="dropdown-item"><label class="w-100 service-label"><input type="checkbox" checked name="services[]" value="code"> Service</label></li>
                                 }
                                 ?>
@@ -173,19 +216,12 @@ $dotenv->load();
                             <script>
                                 checkServicesSelectAll();
                                 // stop clicks inside list closing the dropdown
-                                document.querySelectorAll('.genre-label').forEach(label => {
+                                document.querySelectorAll('.service-label').forEach(label => {
                                     label.addEventListener('click', function(e) {
                                         checkServicesSelectAll();
                                         e.stopPropagation(); 
                                     });
                                 });
-
-                                document.querySelectorAll('.dropdown-menu').forEach(label => {
-                                    label.addEventListener('click', function(e) {
-                                        e.stopPropagation(); 
-                                    });
-                                });
-
 
                                 // check if all are selected
                                 function checkServicesSelectAll() {
@@ -214,17 +250,24 @@ $dotenv->load();
                                         items[i].checked = check;
                                     }
                                 });
+                                
+                                document.querySelectorAll('.dropdown-menu').forEach(label => {
+                                    label.addEventListener('click', function(e) {
+                                        e.stopPropagation(); 
+                                    });
+                                });
                             </script>
+                        </div>
                     </div>
                 </div>
-                </div>
+                <span class="circled-question">?<div class="tooltip-box">If none are selected, streaming provider filter not used</div></span>
             </div>
                 <div class="row justify-content-center">
                     <div class="col-lg-2 col-md-6 col-10 form-item">
                         <label for="obscurity">Obscurity <span class="circled-question">?<div class="tooltip-box">This is an estimate of how well known the movie is.<br />Set slider to the centre for the "most random" result</div></span></label><br />
-                    <input type="range" id="obscurity" name="obscurity" <?php if(isset($_REQUEST['submit'])) {echo "value=" . $_POST['obscurity'];} else {echo "value=5";} ?> min="0" max="10">
+                        <input type="range" id="obscurity" name="obscurity" <?php if(isset($_REQUEST['submit'])) {echo "value=" . $_POST['obscurity'];} else {echo "value=5";} ?> min="0" max="10">
+                    </div>
                 </div>
-            </div>
             <div class="row justify-content-center">
                 <input type="submit" name="submit" value="Get Movie" class="col-lg-2 col-md-6 col-10 form-item">
             </div>
@@ -239,7 +282,6 @@ $dotenv->load();
                 echo "please select at least 1 genre";
             } else {
                 while (!$complete) {
-                    $token = $_ENV['TMDB_READ_ACCESS_TOKEN'];
                     $url = "https://api.themoviedb.org/3/discover/movie?";
                     
                     // add genre
@@ -320,7 +362,7 @@ $dotenv->load();
                         $movieIndex = rand(0, (sizeof($data['results']) - 1));
                         $movie = $data['results'][$movieIndex];
                         echo "<br /><div class='col'>";
-                        echo getMovieCard($movie, "GB");
+                        echo getMovieCard($movie, $region);
                         echo "</div>";
                         $providersUrl = "https://api.themoviedb.org/3/movie/" . $movie['id'] . "/watch/providers";
                         curl_setopt($curl, CURLOPT_URL, $providersUrl);
@@ -330,16 +372,16 @@ $dotenv->load();
                             exit;
                         }
                         $providers = json_decode($providers, true);
-                        $streamingProvidersImages = displayStreamingProviders($providers['results'], 'GB');
-                        $rentalProvidersImages = displayRentalProviders($providers['results'], 'GB');
-                        $purchaseProvidersImages = displayPurchaseProviders($providers['results'], 'GB');
-                        echo "<br /><div class='row providers-container'><a href='https://www.themoviedb.org/movie/" . $movie['id'] . "/watch?locale=" . "GB" . "' target='_blank'>";
+                        $streamingProvidersImages = displayStreamingProviders($providers['results'], $region);
+                        $rentalProvidersImages = displayRentalProviders($providers['results'], $region);
+                        $purchaseProvidersImages = displayPurchaseProviders($providers['results'], $region);
+                        echo "<br /><div class='row providers-container'><a href='https://www.themoviedb.org/movie/" . $movie['id'] . "/watch?locale=" . $region . "' target='_blank'>";
                         echo "<p style='display: inline-block'>Stream: </p>";
                         echo $streamingProvidersImages;
-                        echo "</div><div class='row providers-container'><a href='https://www.themoviedb.org/movie/" . $movie['id'] . "/watch?locale=" . "GB" . "' target='_blank'>";
+                        echo "</div><div class='row providers-container'><a href='https://www.themoviedb.org/movie/" . $movie['id'] . "/watch?locale=" . $region . "' target='_blank'>";
                         echo "<p style='display: inline-block'>Rent: </p>";
                         echo $rentalProvidersImages;
-                        echo "</div><div class='row providers-container'><a href='https://www.themoviedb.org/movie/" . $movie['id'] . "/watch?locale=" . "GB" . "' target='_blank'>";
+                        echo "</div><div class='row providers-container'><a href='https://www.themoviedb.org/movie/" . $movie['id'] . "/watch?locale=" . $region . "' target='_blank'>";
                         echo "<p style='display: inline-block'>Buy: </p>";
                         echo $purchaseProvidersImages;
                         echo "</a></div>";
