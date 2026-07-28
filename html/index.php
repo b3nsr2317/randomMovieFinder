@@ -9,6 +9,21 @@ $dotenv->load();
 $token = $_ENV['TMDB_READ_ACCESS_TOKEN'];
 
 $region = "GB";
+
+session_start();
+if (!isset($_SESSION["sessionStart"])) {
+    $_SESSION["sessionStart"] = microtime(true);
+} elseif ((microtime(true) - $_SESSION["sessionStart"])/60000000 > 30) {
+    session_unset();
+}
+if (isset($_SESSION["servicesRegion"])) {
+    if (! $_SESSION["servicesRegion"] == $region) {
+        $_SESSION["services"] = getServices($region, $token);
+        }
+} else {
+    $_SESSION["services"] = getServices($region, $token);
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -149,23 +164,28 @@ $region = "GB";
                         <div class="dropdown-menu w-100">
                             <ul class="dropdown-list">
                                 <?php
-                                // get providers for region
-                                $providersUrl = "https://api.themoviedb.org/3/watch/providers/movie?watch_region=" . $region;
-                                $providersCurl = curl_init();
-                                curl_setopt($providersCurl, CURLOPT_URL, $providersUrl);
-                                curl_setopt($providersCurl, CURLOPT_RETURNTRANSFER, true);
-                                curl_setopt($providersCurl, CURLOPT_HTTPHEADER, [
-                                    "Authorization: Bearer $token",
-                                    'accept: application/json'
-                                    ]);
-                                    curl_setopt($providersCurl, CURLOPT_CUSTOMREQUEST, 'GET');
-                                    $response = curl_exec($providersCurl);
-                                    if (curl_errno($providersCurl)){
-                                        echo "cURL error: " . curl_error($providersCurl);
-                                        exit;
-                                        }
-                                $data = json_decode($response, true);
-                                $services = array_values($data['results']);
+                                function getServices($region, $token) {
+                                    // get providers for region
+                                    $_SESSION["servicesRegion"] = $region;
+                                    $providersUrl = "https://api.themoviedb.org/3/watch/providers/movie?watch_region=" . $region;
+                                    $providersCurl = curl_init();
+                                    curl_setopt($providersCurl, CURLOPT_URL, $providersUrl);
+                                    curl_setopt($providersCurl, CURLOPT_RETURNTRANSFER, true);
+                                    curl_setopt($providersCurl, CURLOPT_HTTPHEADER, [
+                                        "Authorization: Bearer $token",
+                                        'accept: application/json'
+                                        ]);
+                                        curl_setopt($providersCurl, CURLOPT_CUSTOMREQUEST, 'GET');
+                                        $response = curl_exec($providersCurl);
+                                        if (curl_errno($providersCurl)){
+                                            echo "cURL error: " . curl_error($providersCurl);
+                                            exit;
+                                            }
+                                    $data = json_decode($response, true);
+                                    $services = array_values($data['results']);
+                                    return $services;
+                                }
+                                $services = $_SESSION["services"];
                                 $serviceList = array();
                                 for ($i = 0; $i < sizeof($services); $i++) {
                                     $serviceList += [$services[$i]['provider_name'] => $services[$i]['provider_id']];
