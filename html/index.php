@@ -1,6 +1,7 @@
 <?php
 require realpath(__DIR__ . "/../movieCard.php");
 require realpath(__DIR__ . "/../movieProviders.php");
+require realpath(__DIR__ . "/../searchList.php");
 require_once realpath(__DIR__ . "/../vendor/autoload.php");
 use Dotenv\Dotenv;
 $dotenv = Dotenv::createImmutable(__DIR__ . "/../");
@@ -61,7 +62,7 @@ if (isset($_SESSION["servicesRegion"])) {
         <h1>Random Movie Finder</h1>
     </header>
     <div id="main-content" class="container">
-        <form action="" method="POST">
+        <form action="" id="main-form" method="POST">
             <!-- container for genre selector -->
             <div class="row justify-content-center">
                 <div id="genre-dropdown-container" class="col-lg-2 col-md-6 col-10">
@@ -96,7 +97,9 @@ if (isset($_SESSION["servicesRegion"])) {
                                 echo "<li class=\"dropdown-item\"><label class=\"w-100\"><input type=\"checkbox\" checked name=\"select-all\" id=\"all-genres-checked\"> Select All</label></li>";
                                 // check if each checkbox should be checked
                                 foreach ($genreList as $g => $c) {
+                                    // default to checked
                                     $checked = true;
+                                    // if no post request, or genre not included in post request, set to unchecked
                                     if (isset($_REQUEST['submit'])) {
                                         if (isset($_POST['genres'])) {
                                             if (! in_array($c, $_POST['genres'])) {
@@ -108,6 +111,7 @@ if (isset($_SESSION["servicesRegion"])) {
                                     }
                                     // list item for each genre
                                     echo "<li class=\"dropdown-item\"><label class=\"w-100 genre-label\"><input type=\"checkbox\"";
+                                    // if required, set to checked
                                     if ($checked) {
                                         echo " checked ";
                                     }
@@ -194,10 +198,10 @@ if (isset($_SESSION["servicesRegion"])) {
                                     $serviceList += [$services[$i]['provider_name'] => $services[$i]['provider_id']];
                                 }
                                 // Generate list of all services as dropdown items
-                                echo "<li class=\"dropdown-item\"><label class=\"w-100\"><input type=\"checkbox\" checked name=\"select-all\" id=\"all-services-checked\"> Select All</label></li>";
+                                echo "<li class=\"dropdown-item\"><label class=\"w-100\"><input type=\"checkbox\" name=\"select-all\" id=\"all-services-checked\"> Select All</label></li>";
                                 // check if checkbox should be checked
                                 foreach ($serviceList as $s => $c) {
-                                    $checked = false;
+                                    $checked = true;
                                     if (isset($_REQUEST['submit'])) {
                                         if (isset($_POST['services'])) {
                                             if (! in_array($c, $_POST['services'])) {
@@ -206,6 +210,8 @@ if (isset($_SESSION["servicesRegion"])) {
                                         } else {
                                             $checked = false;
                                         }
+                                    } else {
+                                        $checked = false;
                                     }
                                     echo "<li class=\"dropdown-item\"><label class=\"w-100 service-label\"><input type=\"checkbox\"";
                                     if ($checked) {
@@ -263,7 +269,7 @@ if (isset($_SESSION["servicesRegion"])) {
                         </div>
                     </div>
                 </div>
-                <span class="circled-question">?<div class="tooltip-box">If none are selected, streaming provider filter not used</div></span>
+                <span class="circled-question">?<div class="tooltip-box">If none are selected, streaming provider filter not used<br />On high obscurities, this can take some time</div></span>
             </div>
                 <div class="row justify-content-center">
                     <div class="col-lg-2 col-md-6 col-10 form-item">
@@ -271,23 +277,26 @@ if (isset($_SESSION["servicesRegion"])) {
                         <input type="range" id="obscurity" name="obscurity" <?php if(isset($_REQUEST['submit'])) {echo "value=" . $_POST['obscurity'];} else {echo "value=5";} ?> min="0" max="10">
                     </div>
                 </div>
-            <div class="row justify-content-center">
-                <input type="submit" name="submit" value="Get Movie" class="col-lg-2 col-md-6 col-10 form-item">
-            </div>
+                <div class="row justify-content-center">
+                    <input type="submit" name="submit" value="Get Movie" class="col-lg-2 col-md-6 col-10 form-item">
+                </div>
         </form>
         <br />
         <br />
         <div class="row justify-content-center g-0">
         <?php
         if (isset($_REQUEST['submit'])) {
+            // get new movie
             $complete = false;
             if (!isset($_POST['genres'])) {
                 echo "please select at least 1 genre";
             } else {
+                $call_counter = 0;
                 while (!$complete) {
+                    // initialise URL string
                     $url = "https://api.themoviedb.org/3/discover/movie?";
                     
-                    // add genre
+                    // add genre(s)
                     $genres = $_POST['genres'];
                     $genre = $genres[rand(0, (sizeof($genres) - 1))];
                     $url = $url . "with_genres=$genre";
@@ -306,30 +315,31 @@ if (isset($_SESSION["servicesRegion"])) {
                         case 3:
                             $obscurity = "&vote_count.gte=750";
                             break;
-                            case 4:
-                                $obscurity = "&vote_count.gte=300";
-                                break;
-                                case 5:
-                                    $obscurity = "&vote_count.gte=150";
+                        case 4:
+                            $obscurity = "&vote_count.gte=300";
                             break;
-                            case 6:
-                                $obscurity = "&vote_count.gte=150&vote_count.lte=3000";
-                                break;
-                                case 7:
-                                    $obscurity = "&vote_count.gte=100&vote_count.lte=1000";
-                                    break;
-                                    case 8:
-                                        $obscurity = "&vote_count.gte=100&vote_count.lte=500";
-                                        break;
-                                        case 9:
-                                            $obscurity = "&vote_count.gte=50&vote_count.lte=150";
-                                            break;
-                                            case 10:
-                                                $obscurity = "&vote_count.gte=20&vote_count.lte=50";
-                                                break;
-                                                }
+                            case 5:
+                                $obscurity = "&vote_count.gte=150";
+                        break;
+                        case 6:
+                            $obscurity = "&vote_count.gte=150&vote_count.lte=3000";
+                            break;
+                        case 7:
+                            $obscurity = "&vote_count.gte=100&vote_count.lte=1000";
+                            break;
+                        case 8:
+                            $obscurity = "&vote_count.gte=100&vote_count.lte=500";
+                            break;
+                        case 9:
+                            $obscurity = "&vote_count.gte=50&vote_count.lte=150";
+                            break;
+                        case 10:
+                            $obscurity = "&vote_count.gte=20&vote_count.lte=50";
+                            break;
+                        }
                     $url = $url . $obscurity;
                     
+                    // make API call
                     $curl = curl_init();
                     curl_setopt($curl, CURLOPT_URL, $url);
                     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -337,23 +347,29 @@ if (isset($_SESSION["servicesRegion"])) {
                         "Authorization: Bearer $token",
                         'accept: application/json'
                         ]);
-                        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'GET');
-                        $response = curl_exec($curl);
-                        if (curl_errno($curl)){
-                            echo "cURL error: " . curl_error($curl);
-                            exit;
-                            }
+                    curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'GET');
+                    $response = curl_exec($curl);
+                    if (curl_errno($curl)){
+                        echo "cURL error: " . curl_error($curl);
+                        exit;
+                    }
+                    //increment call counter
+                    $call_counter += 1;
+
+                    // decode result and get the number of pages of results
                     $data = json_decode($response, true); 
                     $max = ceil($data['total_results']/20.0);
                     // limit max at 500 (api restriction)
                     if ($max > 500) {
                         $max = 500;
                         }
+                    // pick a random page within the limit
                     $page = 1;
                     if ($max > 1) {
                         $page = rand(1, $max);
                         }
                         $url = $url . "&page=$page";
+                    // make second API call to get that page of results
                     curl_setopt($curl, CURLOPT_URL, $url);
                     $response = curl_exec($curl);
                     if (curl_errno($curl)) {
@@ -361,35 +377,88 @@ if (isset($_SESSION["servicesRegion"])) {
                         exit;
                     }
                     $data = json_decode($response, true);
-                    if (sizeof($data['results']) > 1) {
+                    $pageSize = sizeof($data['results']);
+                    if ($pageSize > 1) {
+                        $increment = 0;
+                        // pick random movie from page and store it in its own variable
                         $movieIndex = rand(0, (sizeof($data['results']) - 1));
-                        $movie = $data['results'][$movieIndex];
-                        echo "<br /><div class='col'>";
-                        echo getMovieCard($movie, $region);
-                        echo "</div>";
-                        $providersUrl = "https://api.themoviedb.org/3/movie/" . $movie['id'] . "/watch/providers";
-                        curl_setopt($curl, CURLOPT_URL, $providersUrl);
-                        $providers = curl_exec($curl);
-                        if (curl_errno($curl)) {
-                            echo "cURL error: " . curl_errno($curl);
-                            exit;
+                        // loop through page until movie with selected watch providers is found
+                        while ($increment < $pageSize) {
+                            if ($increment + $movieIndex < $pageSize) {
+                                $movie = $data['results'][$movieIndex + $increment];
+                            } else {
+                                $movie = $data['results'][$increment];
+                            }
+                            // call API to get providers
+                            $providersUrl = "https://api.themoviedb.org/3/movie/" . $movie['id'] . "/watch/providers";
+                            curl_setopt($curl, CURLOPT_URL, $providersUrl);
+                            $providers = curl_exec($curl);
+                            $providers = json_decode($providers, true);
+                            if (curl_errno($curl)) {
+                                echo "cURL error: " . curl_errno($curl);
+                                exit;
+                            }
+                            // if no providers selected, choose current movie
+                            if (!isset($_POST['services'])) {
+                                $complete = true;
+                                break;
+                            } else {
+                                // compare selected providers to movie providers
+                                $streamProviderIds = array();
+                                if (isset($providers['results'][$region]['flatrate'])) {
+                                    foreach($providers['results'][$region]['flatrate'] as $provider) {
+                                        array_push($streamProviderIds, $provider['provider_id']);
+                                    }
+                                }
+                                if (isset($providers['results'][$region]['ads'])) {
+                                    foreach($providers['results'][$region]['ads'] as $provider) {
+                                        array_push($streamProviderIds, $provider['provider_id']);
+                                    }
+                                }
+                                if (isset($providers['results'][$region]['free'])) {
+                                    foreach($providers['results'][$region]['free'] as $provider) {
+                                        array_push($streamProviderIds, $provider['provider_id']);
+                                    }
+                                }
+                                if (sizeof($streamProviderIds) > 0) {
+                                    if (searchList($streamProviderIds, $_POST['services'])) {
+                                        $complete = true;
+                                        break;
+                                    } else {
+                                        $increment += 1;
+                                    }
+                                } else {
+                                    $increment += 1;
+                                }
+                            }
                         }
-                        $providers = json_decode($providers, true);
-                        $streamingProvidersImages = displayStreamingProviders($providers['results'], $region);
-                        $rentalProvidersImages = displayRentalProviders($providers['results'], $region);
-                        $purchaseProvidersImages = displayPurchaseProviders($providers['results'], $region);
-                        echo "<br /><div class='row providers-container'><a href='https://www.themoviedb.org/movie/" . $movie['id'] . "/watch?locale=" . $region . "' target='_blank'>";
-                        echo "<p style='display: inline-block'>Stream: </p>";
-                        echo $streamingProvidersImages;
-                        echo "</div><div class='row providers-container'><a href='https://www.themoviedb.org/movie/" . $movie['id'] . "/watch?locale=" . $region . "' target='_blank'>";
-                        echo "<p style='display: inline-block'>Rent: </p>";
-                        echo $rentalProvidersImages;
-                        echo "</div><div class='row providers-container'><a href='https://www.themoviedb.org/movie/" . $movie['id'] . "/watch?locale=" . $region . "' target='_blank'>";
-                        echo "<p style='display: inline-block'>Buy: </p>";
-                        echo $purchaseProvidersImages;
-                        echo "</a></div>";
-                        echo "<br /><a class=\"row mx-auto jw-link\" href=\"https://www.justwatch.com/\" target=\"_blank\"><p class=\"m-0\" style=\"display: inline-block; text-align: center;\">Powered By <img src=\"./images/JustWatch.svg\" alt=\"JustWatch\" height=\"15pt\"></p></a>";
-                        $complete = true;
+                        if ($complete) {
+                            // output movie card
+                            echo "<br /><div class='col'>";
+                            echo getMovieCard($movie, $region);
+                            echo "</div>";
+                            // display streaming provider icons
+                            $streamingProvidersImages = displayStreamingProviders($providers['results'], $region);
+                            $rentalProvidersImages = displayRentalProviders($providers['results'], $region);
+                            $purchaseProvidersImages = displayPurchaseProviders($providers['results'], $region);
+                            echo "<br /><div class='row providers-container'><a href='https://www.themoviedb.org/movie/" . $movie['id'] . "/watch?locale=" . $region . "' target='_blank'>";
+                            echo "<p style='display: inline-block'>Stream: </p>";
+                            echo $streamingProvidersImages;
+                            echo "</div><div class='row providers-container'><a href='https://www.themoviedb.org/movie/" . $movie['id'] . "/watch?locale=" . $region . "' target='_blank'>";
+                            echo "<p style='display: inline-block'>Rent: </p>";
+                            echo $rentalProvidersImages;
+                            echo "</div><div class='row providers-container'><a href='https://www.themoviedb.org/movie/" . $movie['id'] . "/watch?locale=" . $region . "' target='_blank'>";
+                            echo "<p style='display: inline-block'>Buy: </p>";
+                            echo $purchaseProvidersImages;
+                            echo "</a></div>";
+                            echo "<br /><a class=\"row mx-auto jw-link\" href=\"https://www.justwatch.com/\" target=\"_blank\"><p class=\"m-0\" style=\"display: inline-block; text-align: center;\">Powered By <img src=\"./images/JustWatch.svg\" alt=\"JustWatch\" height=\"15pt\"></p></a>";
+                        }
+                        // $complete = true;
+                        // limit to a maximum of 15 pages of results checked to stop infinite search times
+                        if (!$complete && $call_counter >= 15) {
+                            echo "<br /><div class='col text-center'><h2>Request timed out, please try again with different filters</h2></div>";
+                            $complete = true;
+                        }
                     }
                 }
             }
