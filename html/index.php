@@ -10,14 +10,17 @@ $token = $_ENV['TMDB_READ_ACCESS_TOKEN'];
 
 $region = "GB";
 
+// Start session, if session is older than 30 minutes unset the session
 session_start();
 if (!isset($_SESSION["sessionStart"])) {
     $_SESSION["sessionStart"] = microtime(true);
 } elseif ((microtime(true) - $_SESSION["sessionStart"])/60000000 > 30) {
     session_unset();
 }
+
+// unless a session already exists with current region, get list of services
 if (isset($_SESSION["servicesRegion"])) {
-    if (! $_SESSION["servicesRegion"] == $region) {
+    if (! ($_SESSION["servicesRegion"] == $region)) {
         $_SESSION["services"] = getServices($region, $token);
         }
 } else {
