@@ -10,11 +10,31 @@ function displayStreamingProviders($providers, $region) {
     $providers = $providers[$region];
     $result = "";
 
+    $available = false;
+
     if (isset($providers['flatrate'])) {
         for ($i = 0; $i < sizeof($providers['flatrate']); $i++) {
             $provider = $providers['flatrate'][$i];
             $result = $result . "<img src='https://image.tmdb.org/t/p/w45" . $provider['logo_path'] . "' alt='". $provider['provider_name'] ."' class='provider-logo'>";
         }
+        $available = true;
+    }
+    if (isset($providers['free'])) {
+        for ($i = 0; $i < sizeof($providers['free']); $i++) {
+            $provider = $providers['free'][$i];
+            $result = $result . "<img src='https://image.tmdb.org/t/p/w45" . $provider['logo_path'] . "' alt='". $provider['provider_name'] ."' class='provider-logo'>";
+        }
+        $available = true;
+    }
+    if (isset($providers['ads'])) {
+        for ($i = 0; $i < sizeof($providers['ads']); $i++) {
+            $provider = $providers['ads'][$i];
+            $result = $result . "<img src='https://image.tmdb.org/t/p/w45" . $provider['logo_path'] . "' alt='". $provider['provider_name'] ."' class='provider-logo'>";
+        }
+        $available = true;
+    }
+
+    if ($available) {
         return $result;
     } else {
         return "Not available to stream";
