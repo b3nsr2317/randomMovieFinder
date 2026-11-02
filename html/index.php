@@ -17,7 +17,7 @@ $region = "GB";
 session_start();
 if (!isset($_SESSION["sessionStart"])) {
     $_SESSION["sessionStart"] = microtime(true);
-} elseif ((microtime(true) - $_SESSION["sessionStart"])/60000000 > 30) {
+} elseif ((microtime(true) - $_SESSION["sessionStart"])/60 > 30) {
     session_unset();
 }
 
