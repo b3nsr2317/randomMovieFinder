@@ -473,7 +473,6 @@ if (isset($_SESSION["servicesRegion"])) {
                             }
                         }
                         if ($complete) {
-                            print_r($movie['runtime']);
                             // output movie card
                             echo "<br /><div class='col'>";
                             echo getMovieCard($movie, $region);
