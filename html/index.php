@@ -216,6 +216,7 @@ if (isset($_SESSION["servicesRegion"])) {
                                     $providersCurl = curl_init();
                                     curl_setopt($providersCurl, CURLOPT_URL, $providersUrl);
                                     curl_setopt($providersCurl, CURLOPT_RETURNTRANSFER, true);
+                                    curl_setopt($providersCurl, CURLOPT_TIMEOUT, 60);
                                     curl_setopt($providersCurl, CURLOPT_HTTPHEADER, [
                                         "Authorization: Bearer $token",
                                         'accept: application/json'
@@ -381,6 +382,7 @@ if (isset($_SESSION["servicesRegion"])) {
                     $curl = curl_init();
                     curl_setopt($curl, CURLOPT_URL, $url);
                     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($curl, CURLOPT_TIMEOUT, 400);
                     curl_setopt($curl, CURLOPT_HTTPHEADER, [
                         "Authorization: Bearer $token",
                         'accept: application/json'
