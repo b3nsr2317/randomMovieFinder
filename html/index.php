@@ -333,7 +333,7 @@ if (isset($_SESSION["servicesRegion"])) {
                 $call_counter = 0;
                 while (!$complete) {
                     // initialise URL string
-                    $url = "https://api.themoviedb.org/3/discover/movie?";
+                    $url = "https://api.themoviedb.org/3/discover/movie?sort_by=title.asc&";
                     
                     // add genre(s)
                     $genres = $_POST['genres'];
@@ -473,6 +473,7 @@ if (isset($_SESSION["servicesRegion"])) {
                             }
                         }
                         if ($complete) {
+                            print_r($movie['runtime']);
                             // output movie card
                             echo "<br /><div class='col'>";
                             echo getMovieCard($movie, $region);
