@@ -51,6 +51,24 @@ if (isset($_SESSION["servicesRegion"])) {
     
     <meta name="description" content="Find a random movie to watch instantly. Stop endlessly scrolling through Netflix and get a tailored film choice instantly using the genre and streaming service filters.">
 
+    <script type="application/ld+json">
+    {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Random Movie Finder",
+    "url": "https://projects.ben-robertson.com/movie-picker/",
+    "applicationCategory": "EntertainmentApplication",
+    "operatingSystem": "All",
+    "browserRequirements": "Requires JavaScript. Requires HTML5.",
+    "description": "Tool to find a random movie from TMDB using a set of filters to tailor choices to the user, including a unique obscurity score using TMDB's vote count",
+    "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+    }
+    }
+    </script>
+
     <!-- Open Graph Social Sharing Tags -->
     <meta property="og:title" content="Random Movie Finder">
     <meta property="og:description" content="Filter movies by genre and streaming service to find something to watch instantly.">
