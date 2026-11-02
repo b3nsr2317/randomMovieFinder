@@ -45,9 +45,8 @@ if (isset($_SESSION["servicesRegion"])) {
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-
-    gtag('config', '<?php echo $gtag; ?>');
     </script>
+    gtag('config', '<?php echo $gtag; ?>');
     <title>Random Movie Finder</title>
     
     <meta name="description" content="Find a random movie to watch instantly. Stop endlessly scrolling through Netflix and get a tailored film choice instantly using the genre and streaming service filters.">
