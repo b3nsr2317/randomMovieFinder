@@ -49,6 +49,14 @@ if (isset($_SESSION["servicesRegion"])) {
     gtag('config', '<?php echo $gtag; ?>');
     </script>
     <title>Random Movie Finder</title>
+    
+    <meta name="description" content="Find a random movie to watch instantly. Stop endlessly scrolling through Netflix and get a tailored film choice instantly using the genre and streaming service filters.">
+
+    <!-- Open Graph Social Sharing Tags -->
+    <meta property="og:title" content="Random Movie Finder">
+    <meta property="og:description" content="Filter movies by genre and streaming service to find something to watch instantly.">
+    <meta property="og:url" content="https://projects.ben-robertson.com/movie-picker/">
+    <meta property="og:type" content="website">
 
     <!-- Font and Bootstrap import -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
