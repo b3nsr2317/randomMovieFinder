@@ -489,13 +489,13 @@ if (isset($_SESSION["region"])) {
                             $streamingProvidersImages = displayStreamingProviders($providers['results'], strtoupper($region));
                             $rentalProvidersImages = displayRentalProviders($providers['results'], strtoupper($region));
                             $purchaseProvidersImages = displayPurchaseProviders($providers['results'], strtoupper($region));
-                            echo "<br /><div class='row providers-container'><a href='https://www.themoviedb.org/movie/" . $movie['id'] . "/watch?locale=" . $region . "' target='_blank'>";
+                            echo "<br /><div class='row providers-container'><a href='https://www.themoviedb.org/movie/" . $movie['id'] . "/watch?locale=" . strtoupper($region) . "' target='_blank'>";
                             echo "<p style='display: inline-block'>Stream: </p>";
                             echo $streamingProvidersImages;
-                            echo "</div><div class='row providers-container'><a href='https://www.themoviedb.org/movie/" . $movie['id'] . "/watch?locale=" . $region . "' target='_blank'>";
+                            echo "</div><div class='row providers-container'><a href='https://www.themoviedb.org/movie/" . $movie['id'] . "/watch?locale=" . strtoupper($region) . "' target='_blank'>";
                             echo "<p style='display: inline-block'>Rent: </p>";
                             echo $rentalProvidersImages;
-                            echo "</div><div class='row providers-container'><a href='https://www.themoviedb.org/movie/" . $movie['id'] . "/watch?locale=" . $region . "' target='_blank'>";
+                            echo "</div><div class='row providers-container'><a href='https://www.themoviedb.org/movie/" . $movie['id'] . "/watch?locale=" . strtoupper($region) . "' target='_blank'>";
                             echo "<p style='display: inline-block'>Buy: </p>";
                             echo $purchaseProvidersImages;
                             echo "</a></div>";
