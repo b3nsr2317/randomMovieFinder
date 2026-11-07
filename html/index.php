@@ -2,6 +2,7 @@
 require realpath(__DIR__ . "/../movieCard.php");
 require realpath(__DIR__ . "/../movieProviders.php");
 require realpath(__DIR__ . "/../searchList.php");
+require realpath(__DIR__ . "/../regionDropdown.php");
 require_once realpath(__DIR__ . "/../vendor/autoload.php");
 use Dotenv\Dotenv;
 $dotenv = Dotenv::createImmutable(__DIR__ . "/../");
@@ -11,8 +12,6 @@ $gtag = $_ENV['GTAG_ID'];
 
 $token = $_ENV['TMDB_READ_ACCESS_TOKEN'];
 
-$region = "GB";
-
 // Start session, if session is older than 30 minutes unset the session
 session_start();
 if (!isset($_SESSION["sessionStart"])) {
@@ -21,9 +20,17 @@ if (!isset($_SESSION["sessionStart"])) {
     session_unset();
 }
 
+if (isset($_GET["region"])) {
+    $region = $_GET["region"];
+} elseif (isset($_SESSION["region"])) {
+    $region = $_SESSION["region"];
+} else {
+    $region = "gb";
+}
+
 // unless a session already exists with current region, get list of services
-if (isset($_SESSION["servicesRegion"])) {
-    if (! ($_SESSION["servicesRegion"] == $region)) {
+if (isset($_SESSION["region"])) {
+    if (! ($_SESSION["region"] == $region)) {
         $_SESSION["services"] = getServices($region, $token);
         }
 } else {
@@ -93,11 +100,12 @@ if (isset($_SESSION["servicesRegion"])) {
     href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css"
     />
 
-    <link href="./stylesheets/main.css?v=202607071318" rel="stylesheet">
+    <link href="./stylesheets/main.css?v=202611071248" rel="stylesheet">
 </head>
 <body>
     <header>
         <h1>Random Movie Finder</h1>
+        <?php echo getCountriesDropdown($region); ?>
     </header>
     <div id="main-content" class="container">
         <form action="" id="main-form" method="POST">
@@ -108,7 +116,7 @@ if (isset($_SESSION["servicesRegion"])) {
                         <button id="genre-dropdown" class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Genre
                         </button>
-                        <div class="dropdown-menu w-100">
+                        <div class="dropdown-menu persistent-dropdown-menu w-100">
                             <ul class="dropdown-list">
                                 <?php
                                 // Generate list of all genres as dropdown items
@@ -206,12 +214,12 @@ if (isset($_SESSION["servicesRegion"])) {
                         <button id="services-dropdown" class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Streaming Services
                         </button>
-                        <div class="dropdown-menu w-100">
+                        <div class="dropdown-menu persistent-dropdown-menu w-100">
                             <ul class="dropdown-list">
                                 <?php
                                 function getServices($region, $token) {
                                     // get providers for region
-                                    $_SESSION["servicesRegion"] = $region;
+                                    $_SESSION["region"] = $region;
                                     $providersUrl = "https://api.themoviedb.org/3/watch/providers/movie?watch_region=" . $region;
                                     $providersCurl = curl_init();
                                     curl_setopt($providersCurl, CURLOPT_URL, $providersUrl);
@@ -299,7 +307,7 @@ if (isset($_SESSION["servicesRegion"])) {
                                     }
                                 });
                                 
-                                document.querySelectorAll('.dropdown-menu').forEach(label => {
+                                document.querySelectorAll('.persistent-dropdown-menu').forEach(label => {
                                     label.addEventListener('click', function(e) {
                                         e.stopPropagation(); 
                                     });
@@ -445,18 +453,18 @@ if (isset($_SESSION["servicesRegion"])) {
                             } else {
                                 // compare selected providers to movie providers
                                 $streamProviderIds = array();
-                                if (isset($providers['results'][$region]['flatrate'])) {
-                                    foreach($providers['results'][$region]['flatrate'] as $provider) {
+                                if (isset($providers['results'][strtoupper($region)]['flatrate'])) {
+                                    foreach($providers['results'][strtoupper($region)]['flatrate'] as $provider) {
                                         array_push($streamProviderIds, $provider['provider_id']);
                                     }
                                 }
-                                if (isset($providers['results'][$region]['ads'])) {
-                                    foreach($providers['results'][$region]['ads'] as $provider) {
+                                if (isset($providers['results'][strtoupper($region)]['ads'])) {
+                                    foreach($providers['results'][strtoupper($region)]['ads'] as $provider) {
                                         array_push($streamProviderIds, $provider['provider_id']);
                                     }
                                 }
-                                if (isset($providers['results'][$region]['free'])) {
-                                    foreach($providers['results'][$region]['free'] as $provider) {
+                                if (isset($providers['results'][strtoupper($region)]['free'])) {
+                                    foreach($providers['results'][strtoupper($region)]['free'] as $provider) {
                                         array_push($streamProviderIds, $provider['provider_id']);
                                     }
                                 }
@@ -475,12 +483,12 @@ if (isset($_SESSION["servicesRegion"])) {
                         if ($complete) {
                             // output movie card
                             echo "<br /><div class='col'>";
-                            echo getMovieCard($movie, $region);
+                            echo getMovieCard($movie, strtoupper($region));
                             echo "</div>";
                             // display streaming provider icons
-                            $streamingProvidersImages = displayStreamingProviders($providers['results'], $region);
-                            $rentalProvidersImages = displayRentalProviders($providers['results'], $region);
-                            $purchaseProvidersImages = displayPurchaseProviders($providers['results'], $region);
+                            $streamingProvidersImages = displayStreamingProviders($providers['results'], strtoupper($region));
+                            $rentalProvidersImages = displayRentalProviders($providers['results'], strtoupper($region));
+                            $purchaseProvidersImages = displayPurchaseProviders($providers['results'], strtoupper($region));
                             echo "<br /><div class='row providers-container'><a href='https://www.themoviedb.org/movie/" . $movie['id'] . "/watch?locale=" . $region . "' target='_blank'>";
                             echo "<p style='display: inline-block'>Stream: </p>";
                             echo $streamingProvidersImages;
